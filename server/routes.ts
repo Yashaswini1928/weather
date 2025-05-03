@@ -90,24 +90,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         currentWeather.rain = data.rain;
       }
       
-      // Get UV index from One Call API
-      try {
-        const oneCallResponse = await axios.get(`${OPENWEATHER_BASE_URL}/onecall`, {
-          params: {
-            lat,
-            lon,
-            exclude: "minutely,daily",
-            appid: OPENWEATHER_API_KEY,
-            units: "metric"
-          }
-        });
-        
-        if (oneCallResponse.data.current) {
-          currentWeather.uvIndex = oneCallResponse.data.current.uvi;
-        }
-      } catch (error) {
-        console.error("Error fetching UV index:", error);
-      }
+      // Set a default UV index value since the oneCall API might not be available in the free tier
+      currentWeather.uvIndex = 0; // Default value when UV index is unavailable
       
       res.json(currentWeather);
     } catch (error) {
@@ -123,69 +107,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!lat || !lon) {
         return res.status(400).json({ message: "Latitude and longitude are required" });
       }
-      
-      const response = await axios.get(`${OPENWEATHER_BASE_URL}/onecall`, {
+
+      // Using the 5-day/3-hour forecast endpoint instead of onecall API since it's available in the free tier
+      const forecastResponse = await axios.get(`${OPENWEATHER_BASE_URL}/forecast`, {
         params: {
           lat,
           lon,
-          exclude: "current,minutely,alerts",
           appid: OPENWEATHER_API_KEY,
           units: "metric"
         }
       });
       
-      const data = response.data;
+      // Get current weather for sunrise/sunset data
+      const currentResponse = await axios.get(`${OPENWEATHER_BASE_URL}/weather`, {
+        params: {
+          lat, 
+          lon,
+          appid: OPENWEATHER_API_KEY,
+          units: "metric"
+        }
+      });
       
-      // Process daily forecast
-      const daily: DailyForecast[] = data.daily.slice(0, 7).map((day: any) => {
+      // Group by day for daily forecast
+      const forecastData = forecastResponse.data.list;
+      const sunrise = currentResponse.data.sys.sunrise;
+      const sunset = currentResponse.data.sys.sunset;
+      
+      // Create grouped days for daily forecast (take first entry of each day)
+      const dailyMap = new Map();
+      
+      forecastData.forEach((item: any) => {
+        const date = new Date(item.dt * 1000).toDateString();
+        if (!dailyMap.has(date)) {
+          dailyMap.set(date, item);
+        }
+      });
+      
+      // Convert to daily forecast format
+      const daily: DailyForecast[] = Array.from(dailyMap.values()).slice(0, 5).map((day: any) => {
         const condition = mapWeatherCondition(day.weather[0].id);
         
         return {
           dt: day.dt,
-          sunrise: day.sunrise,
-          sunset: day.sunset,
+          sunrise: sunrise, // Use current day sunrise as estimate
+          sunset: sunset,   // Use current day sunset as estimate
           temp: {
-            day: day.temp.day,
-            min: day.temp.min,
-            max: day.temp.max,
-            night: day.temp.night,
-            eve: day.temp.eve,
-            morn: day.temp.morn
+            day: day.main.temp,
+            min: day.main.temp_min,
+            max: day.main.temp_max,
+            night: day.main.temp,  // Estimate
+            eve: day.main.temp,    // Estimate
+            morn: day.main.temp    // Estimate
           },
           feelsLike: {
-            day: day.feels_like.day,
-            night: day.feels_like.night,
-            eve: day.feels_like.eve,
-            morn: day.feels_like.morn
+            day: day.main.feels_like,
+            night: day.main.feels_like, // Estimate
+            eve: day.main.feels_like,   // Estimate
+            morn: day.main.feels_like   // Estimate
           },
-          pressure: day.pressure,
-          humidity: day.humidity,
+          pressure: day.main.pressure,
+          humidity: day.main.humidity,
           weather: day.weather,
-          speed: day.wind_speed,
-          deg: day.wind_deg,
-          clouds: day.clouds,
-          pop: day.pop,
+          speed: day.wind.speed,
+          deg: day.wind.deg,
+          clouds: day.clouds.all,
+          pop: day.pop || 0,
           condition
         };
       });
       
-      // Process hourly forecast
-      const hourly: HourlyForecast[] = data.hourly.slice(0, 48).map((hour: any) => {
+      // Use the 3-hour forecast data for hourly forecast (limited to 5 days, 3-hour intervals)
+      const hourly: HourlyForecast[] = forecastData.slice(0, 24).map((hour: any) => {
         const condition = mapWeatherCondition(hour.weather[0].id);
         
         return {
           dt: hour.dt,
-          temp: hour.temp,
-          feelsLike: hour.feels_like,
-          pressure: hour.pressure,
-          humidity: hour.humidity,
-          dewPoint: hour.dew_point,
-          clouds: hour.clouds,
+          temp: hour.main.temp,
+          feelsLike: hour.main.feels_like,
+          pressure: hour.main.pressure,
+          humidity: hour.main.humidity,
+          dewPoint: 0, // Not provided in this API
+          clouds: hour.clouds.all,
           visibility: hour.visibility,
-          windSpeed: hour.wind_speed,
-          windDeg: hour.wind_deg,
+          windSpeed: hour.wind.speed,
+          windDeg: hour.wind.deg,
           weather: hour.weather,
-          pop: hour.pop,
+          pop: hour.pop || 0,
           condition
         };
       });
