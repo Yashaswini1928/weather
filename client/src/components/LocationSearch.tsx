@@ -82,7 +82,7 @@ export default function LocationSearch({ onLocationSelect }: LocationSearchProps
           <span className="material-icons text-neutral p-2">search</span>
           <input
             type="text"
-            className="w-full py-2 px-1 focus:outline-none"
+            className="w-full py-2 px-1 focus:outline-none text-gray-800"
             placeholder="Search for a city..."
             value={searchQuery}
             onChange={handleSearchInputChange}
@@ -107,12 +107,12 @@ export default function LocationSearch({ onLocationSelect }: LocationSearchProps
           {locationSuggestions.map((location, index) => (
             <div
               key={index}
-              className="p-2 hover:bg-neutral-lightest cursor-pointer flex items-center"
+              className="p-2 hover:bg-neutral-lightest cursor-pointer flex items-center text-gray-800"
               onClick={() => handleLocationSelect(location)}
             >
-              <span className="material-icons text-neutral mr-2">place</span>
+              <span className="material-icons text-gray-600 mr-2">place</span>
               <span>{location.name}, {location.country}</span>
-              {location.state && <span className="text-neutral-dark ml-1">({location.state})</span>}
+              {location.state && <span className="text-gray-600 ml-1">({location.state})</span>}
             </div>
           ))}
         </div>
