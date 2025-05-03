@@ -142,7 +142,7 @@ export default function CurrentWeather({
             </div>
             
             <div className="bg-white p-3 rounded shadow-sm">
-              <p className="text-neutral-dark text-sm">Precipitation</p>
+              <p className="text-gray-600 text-sm">Precipitation</p>
               <div className="flex items-center mt-1">
                 <span className="material-icons text-primary mr-1">opacity</span>
                 <span className="text-xl font-medium">{precipitationAmount.toFixed(1)} mm</span>
