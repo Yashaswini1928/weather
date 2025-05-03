@@ -100,7 +100,7 @@
   }
 
   body {
-    @apply font-sans antialiased bg-neutral-lightest text-foreground;
+    @apply font-sans antialiased bg-neutral-lightest text-gray-800;
   }
   
   .material-icons {
@@ -136,9 +136,8 @@
 }
 
 [data-weather="night"] {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1505322022379-7c3353ee6291?auto=format&fit=crop&w=1200');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1505322022379-7c3353ee6291?auto=format&fit=crop&w=1200');
   background-size: cover;
-  color: white;
 }
 
 [data-weather="snow"] {

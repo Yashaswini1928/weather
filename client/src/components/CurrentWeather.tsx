@@ -78,26 +78,26 @@ export default function CurrentWeather({
             </div>
             <div className="mt-4 md:mt-0">
               <p className="text-xl text-neutral-darkest capitalize">{data.description}</p>
-              <p className="text-neutral-dark">Feels like {formattedFeelsLike}</p>
+              <p className="text-gray-600">Feels like {formattedFeelsLike}</p>
             </div>
           </div>
           
-          <div className="flex flex-wrap mt-6 text-neutral-dark">
+          <div className="flex flex-wrap mt-6 text-gray-600">
             <div className="mr-6 mb-4">
               <p className="flex items-center"><span className="material-icons mr-1 text-primary">air</span> Wind</p>
-              <p className="font-medium text-neutral-darkest">{formattedWindSpeed}</p>
+              <p className="font-medium text-gray-800">{formattedWindSpeed}</p>
             </div>
             <div className="mr-6 mb-4">
               <p className="flex items-center"><span className="material-icons mr-1 text-primary">water_drop</span> Humidity</p>
-              <p className="font-medium text-neutral-darkest">{data.humidity}%</p>
+              <p className="font-medium text-gray-800">{data.humidity}%</p>
             </div>
             <div className="mr-6 mb-4">
               <p className="flex items-center"><span className="material-icons mr-1 text-primary">visibility</span> Visibility</p>
-              <p className="font-medium text-neutral-darkest">{formattedVisibility}</p>
+              <p className="font-medium text-gray-800">{formattedVisibility}</p>
             </div>
             <div className="mb-4">
               <p className="flex items-center"><span className="material-icons mr-1 text-primary">compress</span> Pressure</p>
-              <p className="font-medium text-neutral-darkest">{formattedPressure}</p>
+              <p className="font-medium text-gray-800">{formattedPressure}</p>
             </div>
           </div>
         </div>
@@ -107,7 +107,7 @@ export default function CurrentWeather({
           
           <div className="space-y-4">
             <div className="bg-white p-3 rounded shadow-sm">
-              <p className="text-neutral-dark text-sm">UV Index</p>
+              <p className="text-gray-600 text-sm">UV Index</p>
               <div className="flex items-center justify-between">
                 <span className="text-xl font-medium">{data.uvIndex || 'N/A'}</span>
                 <div className="w-1/2 bg-neutral-light rounded-full h-2">
@@ -128,7 +128,7 @@ export default function CurrentWeather({
             </div>
             
             <div className="bg-white p-3 rounded shadow-sm">
-              <p className="text-neutral-dark text-sm">Sunrise & Sunset</p>
+              <p className="text-gray-600 text-sm">Sunrise & Sunset</p>
               <div className="flex justify-between mt-1">
                 <div className="flex items-center">
                   <span className="material-icons text-secondary mr-1">wb_sunny</span>
@@ -148,7 +148,7 @@ export default function CurrentWeather({
                 <span className="text-xl font-medium">{precipitationAmount.toFixed(1)} mm</span>
               </div>
               <div className="flex text-sm mt-1">
-                <span className="text-neutral">Chance of rain: </span>
+                <span className="text-gray-600">Chance of rain: </span>
                 <span className="ml-1 font-medium">{rainChance}</span>
               </div>
             </div>
